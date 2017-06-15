@@ -1,0 +1,10 @@
+book.py
+book.json
+book.json.bak
+auto_label.glabels
+1
+input.csv
+output.pdf
+__pycache__
+return_address.glabels
+correct_label_size.glabels

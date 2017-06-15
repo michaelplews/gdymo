@@ -1,0 +1,54 @@
+#!/bin/bash
+
+usage() { echo -e "Usage: <OPTIONS>
+ -i \t id of ppl entry
+ -a \t address reference of ppl entry
+ -t \t <US|UK> label format" 1>&2; exit 1; }
+
+if [ -z "$1" ]
+then
+   usage
+   exit 1
+fi
+
+while getopts ":ht:i:a:" opt; do
+    case "$opt" in
+	t)
+	    label_type=$OPTARG
+	    echo "-t was triggered, Parameter: $label_type" >&2
+	    ;;
+	i)
+	    id=$OPTARG
+	    ;;
+	a)
+	    postadd=$OPTARG
+	    ;;
+	h)
+	    usage
+	    ;;
+	\?)
+	    echo "Invalid Option: -$OPTARG" >&2
+	    exit 1
+	    ;;
+	:)
+	    echo "Option -$OPTARG requires an argument" >&2
+	    exit 1
+    esac
+done
+
+# Ensures file can still create files relative to its own path
+scriptDir=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
+
+# Set up your glabels files
+declare -A arr
+arr['UK']=$scriptDir/UK.glabels
+arr['US']=$scriptDir/US.glabels
+
+label_type=${label_type-'US'}	# If no -t argument, default to 'US'
+label_file=${arr[$label_type]}	# Find appropriate file from label_type
+postadd=${postadd-home}		# sets 'home' as the default if no -a argument is passed
+
+NAME=`ppl name $id`
+ADD=`ppl post $id $postadd | tr '\n' ','`
+
+echo $NAME","$ADD > $scriptDir/input.csv ; glabels-3-batch -i $scriptDir/input.csv $label_file -o $scriptDir/output.pdf ; zathura $scriptDir/output.pdf
