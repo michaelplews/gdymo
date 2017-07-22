@@ -43,6 +43,7 @@ scriptDir=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
 declare -A arr
 arr['UK']=$scriptDir/UK.glabels
 arr['US']=$scriptDir/US.glabels
+arr['AUS']=$scriptDir/AUS.glabels
 
 label_type=${label_type-'US'}	# If no -t argument, default to 'US'
 label_file=${arr[$label_type]}	# Find appropriate file from label_type
